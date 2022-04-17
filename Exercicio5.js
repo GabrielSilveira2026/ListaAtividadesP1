@@ -12,16 +12,46 @@ e de tomar o cuidado de não armazená-lo no sistema de controle de versão.*/
 
 // https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
 const { default: axios } = require('axios')
+const prompt = require("prompt-sync")();
 require('dotenv').config()
-const {BASE_URL, APPID, UNITS, LANGUAGE} = process.env
+const {APPID, UNITS, LANGUAGE} = process.env
 
 
-axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=23&lon=43&appid=${APPID}&units=${UNITS}&language=${LANGUAGE}`)
-    .then(res => {
-        return res.data;
-    })
-    .then(res => {
-        console.log("Teste:" + res['main']['temp']);
-        return res.main.temp;
-    })
-    .catch((erro) => console.log("ocorreu um erro" + erro))
+function retornaLink(lat,lon){
+    return new Promise((resolve, reject) => {
+            const resposta = axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APPID}&units=${UNITS}&language=${LANGUAGE}`)
+            resolve(resposta)
+            reject('Failed')
+        }
+    );
+}
+
+const menu = () => {
+    let opcao = 0;
+    do {
+console.log(`
+1- Digitar latitude e longitude 
+2- Sair`)
+        opcao = prompt();
+        Number(opcao);
+        switch (opcao) {
+        case "1":
+            lat = prompt("Digite uma latitude: ");
+            Number(lat);
+            lon = prompt("Digite uma longitude: ");
+            Number(lon);
+            retornaLink(lat,lon)
+            .then(res => {
+                console.log("A temperatura da latitude: " + lat + " e longitude: " + lon + " é = " + res['data']['main']['temp'] + " Celsius");
+            })
+            .catch((erro) => console.log(erro))
+            break;
+        case "2":
+            break;
+        default:
+            console.log("Você inseriu uma opção errada, tente novamente ");
+        }
+    } while (opcao != 2);
+}
+
+menu();
