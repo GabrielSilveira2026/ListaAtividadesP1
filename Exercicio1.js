@@ -38,4 +38,3 @@ soma(a, b);
 subtrai(a, b);
 multiplica(a,b);
 divide(a, b);
-
